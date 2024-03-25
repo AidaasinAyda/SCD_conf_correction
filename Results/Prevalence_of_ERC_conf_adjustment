@@ -1,1 +1,18 @@
+library(dplyr)
+library(tidyr)
 
+# Trim whitespace in 'MatchERC' column
+ERC_matching$MatchERC <- trimws(ERC_matching$MatchERC)
+
+# Create a data frame for matching per geographical region
+correction_df <- ERC_matching %>%
+  group_by(Geographical_region, MatchERC) %>%
+  summarise(count = n()) %>%
+  pivot_wider(names_from = MatchERC, values_from = count, values_fill = 0) %>%
+  ungroup()
+
+# Reorder columns
+correction_df <- correction_df[, c('Geographical_region', 'yes', 'no')]
+
+# Print the resulting data frame
+print(correction_df)
