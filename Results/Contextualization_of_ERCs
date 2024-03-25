@@ -1,0 +1,126 @@
+#Frequency of which method was used in ascertaining ERCs (y/n)
+# Which ERC labels were used?
+library(dplyr)
+library(forcats)
+library(foreign)
+
+#If there is ERC-adjustment in a paper, then the methodology determining ERC mentioned should be a yes or no. Not, N/A
+NA_method <-ERC_matching %>% filter(MatchERC=="yes")%>% filter(MethodologydeterminingERCmentioned == "N/A")%>%
+  data.frame()
+
+#Cleaning step: We discover here that row 3661 en 4191 should be no, correct this
+ERC_matching <- ERC_matching %>%
+  mutate(MethodologydeterminingERCmentioned = ifelse(Recordnumber %in% c(3661, 4191), "no", MethodologydeterminingERCmentioned))
+#Trim whitespace
+ERC_matching$MethodologydeterminingERCmentioned <- trimws(ERC_matching$MethodologydeterminingERCmentioned)
+
+#Create the table "Methodology determining ERC mentioned?" This table only contains "yes" or "no"
+Tabel_method_yn <-ERC_matching %>% filter(MatchERC== "yes") %>% 
+  select(MethodologydeterminingERCmentioned) %>% 
+  table()
+
+#What methodology is used?. 
+#Cleaning step: Remove the option "sibling/relative recruitment" since this method can be used to correct for more factors
+method_df <- data.frame(
+  ERC_matching %>% 
+    filter(MethodologydeterminingERCmentioned == "yes") %>%
+    select(What_method) %>%
+    filter(What_method != "sibling/relative recruitment") %>%
+    table()
+)
+print(method_df)
+
+#Select the cases in which no specification was provided on the method of ERC confounder adjustment.
+
+#Cleaning step: record number 432. Change "no specification" into a "yes"
+ERC_matching <- ERC_matching %>%
+  mutate(NospecificationofERC = ifelse(Recordnumber %in% c(432), "yes", NospecificationofERC))
+
+
+Tabel_specification <-ERC_matching %>% filter(MatchERC== "yes") %>% 
+  select("NospecificationofERC") %>% 
+  table()
+
+Tabel_specification
+#3958 is ten onrechte een N/A wat een yes moet zijn, vooraf corrigeren
+outlier_NA_afr <- ERC_matching %>% 
+  filter(MatchERC == "yes" & trimws(UseofBlackafrican) == "N/A") %>% 
+  select(Recordnumber)
+
+outlier_NA_afr# record number 3958. Nu de N/A in een yes veranderen
+#verwijder al de whitespace
+ERC_matching$UseofBlackafrican <- trimws(ERC_matching$UseofBlackafrican)
+
+ERC_matching <- ERC_matching %>% 
+  mutate(UseofBlackafrican = ifelse(Recordnumber == 3958, "yes", UseofBlackafrican))
+
+# nu kijken hoe vaak labels gebruikt werden, afgeleide van african
+Tabel_lablesused <-ERC_matching %>% filter(MatchERC== "yes") %>% 
+  select("UseofBlackafrican") %>% 
+  table()
+Tabel_lablesused
+
+
+
+
+#o jee, nu heb je weer een N/A terwijl het wel een waarde moet hebben indien ERC match ja
+#not clear moet eigenlijk 82 zijn en niet 83
+#opsporen
+NA_Afr <-ERC_matching %>% filter(MatchERC== "yes") %>% 
+  select("UseofBlackafrican"== "N/A" ) %>% 
+  data.frame()
+NA_Afr
+
+### Nu over explanation given
+Exp_given <- ERC_matching %>% filter(MatchERC=="yes")%>%
+  select(ExplanationaroundERC) %>%
+  table()
+
+Exp_given 
+
+Exp_given_matchyes <- ERC_matching %>% filter(MatchERC=="yes")%>%
+  select(ExplanationaroundERC) %>%
+  table()
+
+Exp_given_matchyes
+
+Exp_given_matchno <- ERC_matching %>% filter(MatchERC=="no ")%>%
+  select(ExplanationaroundERC) %>%
+  table()
+
+Exp_given_matchno
+#kijken naar alle demografische matchingsmethoden
+Conf_adj <- ERC_matching %>% 
+  select(MatchERC, MATCHSES, MatchAGE, MatchGENDERSEX)%>%
+  data.frame()
+
+Conf_adj
+
+Counts_ERC <-
+Conf_adj %>%
+  select(MatchERC) %>%
+  table()
+
+Counts_age <-Conf_adj %>%
+  select(MatchAGE) %>%
+  table()
+
+Counts_gender<-Conf_adj %>%
+  select(MatchGENDERSEX) %>%
+  table()
+
+Counts_SES <- Conf_adj %>%
+  select(MATCHSES) %>%
+  table()
+
+Counts_ERC
+Counts_age
+Counts_gender
+Counts_SES
+
+#bestaan mixed mensen?
+Mixed_count = ERC_matching %>%
+  select (MixedindividualsconsideredasanERC)  %>%
+  table()
+
+Mixed_count
