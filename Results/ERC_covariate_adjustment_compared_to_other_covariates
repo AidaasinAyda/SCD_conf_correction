@@ -37,4 +37,46 @@ result <- chisq.test(contingency_table)
 # Print the result
 print(result)
 
+#Create mulilinear model with SES adjustment, adjustment for other confounders and asses it's influence on ERC-adjustment
+library("lmerTest")
+library("MuMIn")
+
+# Remove leading and trailing whitespace from ERC_matching$MatchERC en MATCHSES en MatchOther
+ERC_matching$MatchERC <- trimws(ERC_matching$MatchERC)
+ERC_matching$MATCHSES <- trimws(ERC_matching$MATCHSES)
+ERC_matching$MatchOther <- trimws(ERC_matching$MatchOther)
+ERC_matching$Discipline1 <- trimws(ERC_matching$Discipline1)
+
+
+#Changes yes to 1 and no to 0 for use in the model
+ERC_matching$ERCMatch2[ERC_matching$MatchERC == "yes"] = 1
+ERC_matching$ERCMatch2[ERC_matching$MatchERC == "no"] = 0
+
+ERC_matching$MATCHSES2[ERC_matching$MATCHSES == "yes"] = 1
+ERC_matching$MATCHSES2[ERC_matching$MATCHSES == "no"] = 0
+
+ERC_matching$MatchOther2[ERC_matching$MatchOther == "yes"] = 1
+ERC_matching$MatchOther2[ERC_matching$MatchOther == "no"] = 0
+
+ERC_matching$ERCMatch2 <- as.factor(ERC_matching$ERCMatch2)
+ERC_matching$MATCHSES2 <- as.factor(ERC_matching$MATCHSES2)
+ERC_matching$MatchOther2 <-as.factor(ERC_matching$MatchOther2)
+ERC_matching$Email <- as.factor(ERC_matching$Email)
+## model wat invloed heeft op matching van ethnicity and race proberen
+## met corresponding author, nu met een andere package. Journal neem
+## ik niet mee als random intercept. discipline wordt al meegenomen
+
+control <- glmerControl(optimizer ='optimx', optCtrl=list(method='nlminb'))
+fit <- glmer(ERCMatch2 ~ MATCHSES2 + MatchOther + Geographical_region + (1|Discipline1),
+                       data=ERC_matching, family=binomial, control=control)
+fit.null <- glmer(ERCMatch2 ~ 1 + (1|Discipline1),
+                       data=ERC_matching, family=binomial, control=control)
+summary(fit)  ## deze
+exp(coeffs(fit))
+exp(confint.merMod(fit, method="Wald"))
+
+r.squaredGLMM(object=fit, null=fit.null)
+
+print(packageVersion('lme4'))
+
 
