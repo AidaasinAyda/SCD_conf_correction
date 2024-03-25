@@ -1,10 +1,18 @@
-#Research subjects identifying with multiple races or ethnicities mentioned in the free text
+#Research subjects identifying with multiple races or ethnicities mentioned in the free text. Look at frequencies and where the study population was sourced from in these studies
+library(dplyr)
 
-Mixed_count = ERC_matching %>%
-  select (MixedindividualsconsideredasanERC)  %>%
-  table()
+ERC_matching$MixedindividualsconsideredasanERC <- trimws(ERC_matching$MixedindividualsconsideredasanERC)
+# Create a frequency table
+frequency_table <- table(ERC_matching$MixedindividualsconsideredasanERC)
 
-Mixed_count
+frequency_table
+mixed_selection <- ERC_matching %>%
+  filter(MixedindividualsconsideredasanERC == "yes") %>% 
+  group_by(Country1) %>%
+  summarize(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+mixed_selection
 
 #In studies with a SSA population, which ethno racial labels were used?
 
