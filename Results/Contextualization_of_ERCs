@@ -36,42 +36,27 @@ print(method_df)
 ERC_matching <- ERC_matching %>%
   mutate(NospecificationofERC = ifelse(Recordnumber %in% c(432), "yes", NospecificationofERC))
 
-
+#Inspect table with articles in which no methodology was specified
 Tabel_specification <-ERC_matching %>% filter(MatchERC== "yes") %>% 
   select("NospecificationofERC") %>% 
   table()
 
 Tabel_specification
-#3958 is ten onrechte een N/A wat een yes moet zijn, vooraf corrigeren
+#Cleaning step: Record number 3958 should be a "yes" instead of "N/A"
 outlier_NA_afr <- ERC_matching %>% 
   filter(MatchERC == "yes" & trimws(UseofBlackafrican) == "N/A") %>% 
   select(Recordnumber)
-
-outlier_NA_afr# record number 3958. Nu de N/A in een yes veranderen
-#verwijder al de whitespace
 ERC_matching$UseofBlackafrican <- trimws(ERC_matching$UseofBlackafrican)
-
 ERC_matching <- ERC_matching %>% 
   mutate(UseofBlackafrican = ifelse(Recordnumber == 3958, "yes", UseofBlackafrican))
 
-# nu kijken hoe vaak labels gebruikt werden, afgeleide van african
+#Inspect which labels which are a derivative of African/Black were used
 Tabel_lablesused <-ERC_matching %>% filter(MatchERC== "yes") %>% 
   select("UseofBlackafrican") %>% 
   table()
 Tabel_lablesused
 
-
-
-
-#o jee, nu heb je weer een N/A terwijl het wel een waarde moet hebben indien ERC match ja
-#not clear moet eigenlijk 82 zijn en niet 83
-#opsporen
-NA_Afr <-ERC_matching %>% filter(MatchERC== "yes") %>% 
-  select("UseofBlackafrican"== "N/A" ) %>% 
-  data.frame()
-NA_Afr
-
-### Nu over explanation given
+### Inspect whether a rationale was provided as to why to adjust for ERCs
 Exp_given <- ERC_matching %>% filter(MatchERC=="yes")%>%
   select(ExplanationaroundERC) %>%
   table()
@@ -84,6 +69,7 @@ Exp_given_matchyes <- ERC_matching %>% filter(MatchERC=="yes")%>%
 
 Exp_given_matchyes
 
+#Inspect the frequency of how often an rationale was provided to not adjust for ERCs
 Exp_given_matchno <- ERC_matching %>% filter(MatchERC=="no ")%>%
   select(ExplanationaroundERC) %>%
   table()
@@ -96,31 +82,3 @@ Conf_adj <- ERC_matching %>%
 
 Conf_adj
 
-Counts_ERC <-
-Conf_adj %>%
-  select(MatchERC) %>%
-  table()
-
-Counts_age <-Conf_adj %>%
-  select(MatchAGE) %>%
-  table()
-
-Counts_gender<-Conf_adj %>%
-  select(MatchGENDERSEX) %>%
-  table()
-
-Counts_SES <- Conf_adj %>%
-  select(MATCHSES) %>%
-  table()
-
-Counts_ERC
-Counts_age
-Counts_gender
-Counts_SES
-
-#bestaan mixed mensen?
-Mixed_count = ERC_matching %>%
-  select (MixedindividualsconsideredasanERC)  %>%
-  table()
-
-Mixed_count
