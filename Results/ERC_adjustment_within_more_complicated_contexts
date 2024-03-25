@@ -1,0 +1,22 @@
+#Research subjects identifying with multiple races or ethnicities mentioned in the free text
+
+Mixed_count = ERC_matching %>%
+  select (MixedindividualsconsideredasanERC)  %>%
+  table()
+
+Mixed_count
+
+
+
+
+#Inspect cross-national comparative studies dataframe
+library(foreign)
+library(dplyr)
+
+ERC_matching_inter <- read.spss("C:\\Users\\asofk\\OneDrive\\Документы\\ERC_matching\\data\\Dataset_ERC_Matching_inter-country_studies_dd_17-03-2023.sav",to.data.frame=TRUE)
+ndf = ERC_matching_inter %>% 
+  filter(MatchERC=="yes")
+
+ndf
+
+
