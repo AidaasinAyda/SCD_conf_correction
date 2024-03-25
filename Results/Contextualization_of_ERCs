@@ -85,6 +85,11 @@ Conf_adj
 #Examine specific reasons for adjusting for ERCs 
 library(dplyr)
 library(writexl)
+
+# Cleaning step: Trim whitespace from the "ExplanationaroundERC" column
+ERC_matching <- ERC_matching %>%
+  mutate(ExplanationaroundERC = trimws(ExplanationaroundERC))
+
 Reasons_for_matching <- ERC_matching %>%
   filter(MatchERC == "yes", ExplanationaroundERC == "yes") %>%
   select(Recordnumber, Whatexplanation)
@@ -104,3 +109,10 @@ Reasons_for_matching <- bind_rows(Reasons_for_matching, additional_records)
 
 #Improved rationale table
 print(Reasons_for_matching)
+
+#Examine reasons for NOT adjusting for ERCs
+Reasons_for_not_matching <- ERC_matching %>% 
+  filter(MatchERC == "no", ExplanationaroundERC == "yes") %>% 
+  select(Recordnumber, Whatexplanation)
+
+print(Reasons_for_not_matching)
