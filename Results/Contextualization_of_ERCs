@@ -82,3 +82,25 @@ Conf_adj <- ERC_matching %>%
 
 Conf_adj
 
+#Examine specific reasons for adjusting for ERCs 
+library(dplyr)
+library(writexl)
+Reasons_for_matching <- ERC_matching %>%
+  filter(MatchERC == "yes", ExplanationaroundERC == "yes") %>%
+  select(Recordnumber, Whatexplanation)
+
+# Cleaning step
+#Record number 207, 536, 3304 en 4628 did not really provide a rationale. Remove.
+record_numbers_to_remove <- c(207, 536, 3304, 4628)
+Reasons_for_matching <- Reasons_for_matching %>%
+  filter(!Recordnumber %in% record_numbers_to_remove)
+
+#Cleaning step: Record number 975, 1461 en 2368 DID provide a rationale
+record_numbers_to_add <- c(975, 1461, 2368)
+additional_records <- ERC_matching %>%
+  filter(Recordnumber %in% record_numbers_to_add) %>%
+  select(Recordnumber, Whatexplanation)
+Reasons_for_matching <- bind_rows(Reasons_for_matching, additional_records)
+
+#Improved rationale table
+print(Reasons_for_matching)
