@@ -6,6 +6,29 @@ Mixed_count = ERC_matching %>%
 
 Mixed_count
 
+#In studies with a SSA population, which ethno racial labels were used?
+
+#Cleaning step: remove whitespace
+ERC_matching$UseofBlackafrican <- trimws(ERC_matching$UseofBlackafrican)
+
+#Cleaning step: Record number 3958 should be a "yes" instead of "N/A"
+
+outlier_NA_afr <- ERC_matching %>% 
+  filter(MatchERC == "yes" & trimws(UseofBlackafrican) == "N/A") %>% 
+  select(Recordnumber)
+ERC_matching$UseofBlackafrican <- trimws(ERC_matching$UseofBlackafrican)
+ERC_matching <- ERC_matching %>% 
+  mutate(UseofBlackafrican = ifelse(Recordnumber == 3958, "yes", UseofBlackafrican))
+
+#Inspect which labels which are a derivative of African/Black were used in SSA
+Table_labelsused <- ERC_matching %>%
+  mutate(MatchERC = trimws(MatchERC),
+         Geographical_region = trimws(Geographical_region)) %>%
+  filter(MatchERC == "yes" & Geographical_region == "SSA") %>%
+  select(Whatword) %>%
+  unique()
+
+Table_labelsused
 
 
 
