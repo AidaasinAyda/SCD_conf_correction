@@ -1,0 +1,54 @@
+# Convert "Geographical_region" to character if it's a factor
+#Plot the frequencies of ERC adjustment per geographical region on a world map
+
+library(sf)
+library(ggplot2)
+library(maps)
+library(dplyr)
+library(tidyr)
+
+#Read in an sav file
+ERC_matching <- haven::read_sav("data/Dataset ERC Matching without inter-country studies dd 17-03-2023.sav")
+
+#zo was het voorheen. Nu het geupdate bestand in de nieuwe dataframe, inclusief mixed individuals "yes"
+ERC_matching <- read.spss("C:\\Users\\asofk\\OneDrive\\Документы\\ERC_matching\\data\\ERC_matching_domestic_studies_dd_05-05-2023.sav",to.data.frame=TRUE)
+
+ERC_matching$MatchERC <- trimws(ERC_matching$MatchERC, which = "right")
+
+
+region_percentage <- ERC_matching %>%
+  select(Country1, Geographical_region, MatchERC) %>%
+  #group_by the columne youre interested in making groups from (e.g. turn countries into regions (continents etc))
+  group_by(Geographical_region) %>%
+  #count the yues and no for each region (that you created in the previous step)
+  count(MatchERC) %>%
+  #split the coulmn that contains no/yes into 2 columns, assign these a valyue from the n (created by the count)
+  pivot_wider(names_from = MatchERC, values_from = n) %>%
+  #calc the percentage
+  mutate(perc_yes = yes*100/(no+yes))
+
+
+#grab the lat and long data for the plots
+world_map <- map_data("world")
+#remove antarctica
+world_map <- subset(world_map, region != "Antarctica")
+
+#join the regions with the countries
+country_data <- ERC_matching %>%
+  select(Country1, Geographical_region) %>%
+  left_join(region_percentage)
+
+#add the percentage data per country as well as per region
+plotting_data <- world_map %>%
+  full_join(country_data, by = join_by(region == Country1), multiple = "all")
+
+#do the plotting
+percentage_map <- ggplot(plotting_data) +
+  geom_map(
+    dat = world_map, map = world_map, aes(map_id = region),
+    fill = "white", color = "#7f7f7f") +
+  geom_map(map = world_map, aes(map_id = region, fill = perc_yes)) +
+  scale_fill_gradient(low = "white", high = "red", name = "Percentage yes", ) +
+  expand_limits(x = world_map$long, y = world_map$lat)
+
+percentage_map
