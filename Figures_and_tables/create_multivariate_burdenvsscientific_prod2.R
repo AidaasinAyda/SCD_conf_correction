@@ -8,10 +8,10 @@ library(tidyr)
 library(rgeos)
 library(rworldmap) #heeft de getmap function
 #Read in an sav file
-ERC_matching <- haven::read_sav("data/Dataset ERC Matching without inter-country studies dd 17-03-2023.sav")
+ERC_matching <- haven::read_sav("ERC_matching_domestic_studies_dd_05-05-2023.sav")
 
 #zo was het voorheen. Nu het geupdate bestand in de nieuwe dataframe, inclusief mixed individuals "yes"
-ERC_matching <- read.spss("C:\\Users\\asofk\\OneDrive\\Документы\\ERC_matching\\data\\ERC_matching_domestic_studies_dd_05-05-2023.sav",to.data.frame=TRUE)
+# ERC_matching <- read.spss("C:\\Users\\asofk\\OneDrive\\Документы\\ERC_matching\\data\\ERC_matching_domestic_studies_dd_05-05-2023.sav",to.data.frame=TRUE)
 
 # "no" in MatchERC bevat een spatie aan de rechterkant, trimmen
 ERC_matching$MatchERC <- trimws(ERC_matching$MatchERC, which = "right")
@@ -41,6 +41,17 @@ centroids_df$y <- NULL
 # Update column names
 colnames(centroids_df) <- c("region", "long", "lat")
 
+
+
+#Create a data frame which contains the amount of unique articles published per country
+# Create a new data frame with two columns: "Country" and "Article_Count"
+article_count <- ERC_matching %>%
+  group_by(Country1) %>%   # Group by "Country1" column
+  summarise(Article_Count = n())   # Count the number of articles per country
+
+# Rename the "Country1" column to "Country"
+article_count <- rename(article_count, Country = Country1)
+
 #nu wil ik de article count eigenlijk hierbij voegen
 merged_data2 = merge(article_count, centroids_df, by.x="Country", by.y = "region")
 
@@ -52,16 +63,6 @@ new_data <- data.frame(
   long = c(41.941978, 35.178822, -61.533590),
   lat = c(37.927402, 32.083012, 16.238090)
 )
-
-
-#Create a data frame which contains the amount of unique articles published per country
-# Create a new data frame with two columns: "Country" and "Article_Count"
-article_count <- ERC_matching %>%
-  group_by(Country1) %>%   # Group by "Country1" column
-  summarise(Article_Count = n())   # Count the number of articles per country
-
-# Rename the "Country1" column to "Country"
-article_count <- rename(article_count, Country = Country1)
 
 #Controle: check whether there are any countries that do not match between article_count and centroids_df
 non_matching_obs <- anti_join(article_count, centroids_df, by = c("Country" = "region"))
@@ -90,7 +91,7 @@ merged_data2 <- rbind(merged_data2, new_data)
 # Load the RDS file into a new variable
 #van geextraheerde tabel HbS prevalence een RDS file gemaakt
 #tot nu toe niet succesvol in het veranderen van een string naar numeric
-Prevalence_data_AF2 <- readRDS("C:\\Users\\asofk\\OneDrive\\Документы\\ERC_matching\\Prevalence_data_AF.rds")
+Prevalence_data_AF2 <- readRDS("Prevalence_data_AF.rds")
 
 
 
