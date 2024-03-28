@@ -1,5 +1,6 @@
 # Read in an sav file (replace "path_to_your_file.sav" with the actual file path)
-ERC_matching <- read.spss("path_to_your_file.sav", to.data.frame=TRUE)
+library(haven)
+ERC_matching <- read_sav("ERC_matching_domestic_studies_dd_05-05-2023.sav")
 
 # Remove leading and trailing whitespace from specific columns
 ERC_matching$MatchERC <- trimws(ERC_matching$MatchERC)
