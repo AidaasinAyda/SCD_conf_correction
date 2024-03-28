@@ -7,13 +7,8 @@ library(maps)
 library(dplyr)
 library(tidyr)
 
-#Read in an sav file
-ERC_matching <- haven::read_sav("data/Dataset ERC Matching without inter-country studies dd 17-03-2023.sav")
 
-#zo was het voorheen. Nu het geupdate bestand in de nieuwe dataframe, inclusief mixed individuals "yes"
-ERC_matching <- read.spss("C:\\Users\\asofk\\OneDrive\\Документы\\ERC_matching\\data\\ERC_matching_domestic_studies_dd_05-05-2023.sav",to.data.frame=TRUE)
-
-ERC_matching$MatchERC <- trimws(ERC_matching$MatchERC, which = "right")
+# ERC_matching$MatchERC <- trimws(ERC_matching$MatchERC, which = "right")
 
 
 region_percentage <- ERC_matching %>%
