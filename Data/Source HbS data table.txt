@@ -1,0 +1,5 @@
+The prevalence table data of the HbS allele is derived from "Web Table 1: Web Table 1: National demographic indicators and estimates of HbS allele frequency and neonates affected"
+
+This is the table supplement to the following publication:
+
+Piel FB, Patil AP, Howes RE, Nyangiri OA, Gething PW, Dewi M, Temperley WH, Williams TN, Weatherall DJ, Hay SI. Global epidemiology of sickle haemoglobin in neonates: a contemporary geostatistical model-based map and population estimates. The Lancet. 2013 Jan 12;381(9861):142-51.

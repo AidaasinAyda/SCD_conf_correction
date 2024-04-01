@@ -20,14 +20,17 @@ Tabel_method_yn <-ERC_matching %>% filter(MatchERC== "yes") %>%
   table()
 
 #What methodology is used?. 
-#Cleaning step: Remove the option "sibling/relative recruitment" since this method can be used to correct for more factors
+#Cleaning step: Remove the option "sibling/relative recruitment" since this method can be used to correct for more factors. Also remove recordnr 2958 as this was sibling recruitment but 
+# incorrectly listed under "multiple ways"
 method_df <- data.frame(
-  ERC_matching %>% 
+  ERC_matching %>%
     filter(MethodologydeterminingERCmentioned == "yes") %>%
+    filter(Recordnumber != 2958) %>%  # Remove Recordnumber 2958
     select(What_method) %>%
     filter(What_method != "sibling/relative recruitment") %>%
     table()
 )
+
 print(method_df)
 
 #Select the cases in which no specification was provided on the method of ERC confounder adjustment.
@@ -37,11 +40,16 @@ ERC_matching <- ERC_matching %>%
   mutate(NospecificationofERC = ifelse(Recordnumber %in% c(432), "yes", NospecificationofERC))
 
 #Inspect table with articles in which no methodology was specified
-Tabel_specification <-ERC_matching %>% filter(MatchERC== "yes") %>% 
-  select("NospecificationofERC") %>% 
-  table()
+#Tabel_specification <-ERC_matching %>% filter(MatchERC== "yes") %>% 
+# select("NospecificationofERC") %>% 
+#table()
 
-Tabel_specification
+#Before, sibling recruitment was also listed as a method. Since this is no longer considered 
+#as a method for ERC adjustment, the frequency of the studies that did adjust for ERCs but did not state a methodology for ERC ascertainment is
+
+No_method_described <- 298-72 #298 are the ERC-adjusted studies, 72 is the total sum of method_df
+
+No_method_described
 #Cleaning step: Record number 3958 should be a "yes" instead of "N/A"
 outlier_NA_afr <- ERC_matching %>% 
   filter(MatchERC == "yes" & trimws(UseofBlackafrican) == "N/A") %>% 
@@ -56,31 +64,20 @@ Tabel_lablesused <-ERC_matching %>% filter(MatchERC== "yes") %>%
   table()
 Tabel_lablesused
 
-### Inspect whether a rationale was provided as to why to adjust for ERCs
-Exp_given <- ERC_matching %>% filter(MatchERC=="yes")%>%
-  select(ExplanationaroundERC) %>%
-  table()
-
-Exp_given 
-
+### Inspect whether a rationale was provided as to why to did adjust for ERCs
 Exp_given_matchyes <- ERC_matching %>% filter(MatchERC=="yes")%>%
   select(ExplanationaroundERC) %>%
   table()
 
-Exp_given_matchyes
+Exp_given_matchyes 
 
 #Inspect the frequency of how often an rationale was provided to not adjust for ERCs
-Exp_given_matchno <- ERC_matching %>% filter(MatchERC=="no ")%>%
+Exp_given_matchno <- ERC_matching %>% filter(MatchERC=="no")%>%
   select(ExplanationaroundERC) %>%
   table()
 
 Exp_given_matchno
-#kijken naar alle demografische matchingsmethoden
-Conf_adj <- ERC_matching %>% 
-  select(MatchERC, MATCHSES, MatchAGE, MatchGENDERSEX)%>%
-  data.frame()
 
-Conf_adj
 
 #Examine specific reasons for adjusting for ERCs 
 library(dplyr)
