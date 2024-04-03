@@ -34,20 +34,26 @@ Table_labelsused <- ERC_matching %>%
          Geographical_region = trimws(Geographical_region)) %>%
   filter(MatchERC == "yes" & Geographical_region == "SSA") %>%
   select(Whatword) %>%
+  filter(Whatword != "N/A") %>%  # Filter out "N/A" values
   unique()
 
-Table_labelsused
+print(Table_labelsused)
 
 
 
-#Inspect cross-national comparative studies dataframe
-library(foreign)
+#Inspect cross-national comparative studies dataframe, studies that did adjust for ERCs
+library(haven)
 library(dplyr)
 
-ERC_matching_inter <- read.spss("C:\\Users\\asofk\\OneDrive\\Документы\\ERC_matching\\data\\Dataset_ERC_Matching_inter-country_studies_dd_17-03-2023.sav",to.data.frame=TRUE)
-ndf = ERC_matching_inter %>% 
-  filter(MatchERC=="yes")
+# Read the SPSS file using haven
+ERC_matching_inter <- read_sav("Dataset_ERC_Matching_inter-country_studies_dd_17-03-2023.sav")
 
-ndf
+# Filter the dataframe
+ndf <- ERC_matching_inter %>% 
+  filter(MatchERC == "yes")
+
+# Print the filtered dataframe
+print(ndf)
+
 
 

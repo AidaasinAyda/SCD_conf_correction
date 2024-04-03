@@ -91,7 +91,7 @@ merged_data2 <- rbind(merged_data2, new_data)
 # Load the RDS file into a new variable
 #van geextraheerde tabel HbS prevalence een RDS file gemaakt
 #tot nu toe niet succesvol in het veranderen van een string naar numeric
-Prevalence_data_AF2 <- readRDS("Prevalence_data_AF.rds")
+Prevalence_data_AF2 <- readRDS("Data/Prevalence_data_AF.rds")
 
 
 
@@ -161,22 +161,26 @@ map_plot <- ggplot() +
 # Add circles on top of the map with size based on "Article Count" data
 map_plot <- map_plot +
   geom_point(data = merged_data3, aes(x = long, y = lat, size = Article_Count),
-             color = "black", fill='transparent', shape = 21) +
-  scale_size_continuous(name = "Article Count in 11 years", range = c(2, 10),
-                        breaks = seq(100, max(merged_data3$Article_Count), by = 50)) +  # Use "Article Count" as the size of the circles
+             color = "black", fill = 'transparent', shape = 21) +
+  scale_size_continuous(
+    name = "Article Count in 11 years",
+    range = c(2, 10),
+    breaks = seq(0, max(merged_data3$Article_Count), by = 50),  # Set breaks at intervals of 50
+    labels = scales::comma(seq(0, max(merged_data3$Article_Count), by = 50))  # Format labels with commas
+  ) +
   guides(size = guide_legend())
 
 # Customize the plot
 map_plot <- map_plot +
-  labs(title = "Geographical Map with Circles", x = "Longitude", y = "Latitude") +
-  theme(plot.title = element_text(size = 16, face = "bold"),
-        axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 14, face = "bold"), 
-       
-)
-        
+  labs(x = "", y = "") +  # Remove x and y labels
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.title = element_blank(),  # Remove axis labels
+    axis.text = element_text(size = 12),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14, face = "bold"),
+  )
 
 # Display the plot
 map_plot
+

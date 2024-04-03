@@ -50,11 +50,11 @@ count_table_long <- yes_counts %>%
 count_table_long$Category <- factor(count_table_long$Category, levels = c("Age_Yes", "GenderSex_Yes", "MatchOther_Yes", "SES_Yes", "ERC_Yes"))
 
 count_table_long$Category <- recode(count_table_long$Category, 
-                                    "Age_Yes" = "Age-adjusted",
-                                    "GenderSex_Yes" = "Gender/sex-adjusted",
-                                    "ERC_Yes" = "ERC-adjusted",
-                                    "MatchOther_Yes" = "Adjusted for other covariates",
-                                    "SES_Yes" = "SES-adjusted"
+                                    "Age_Yes" = "Age",
+                                    "GenderSex_Yes" = "Gender/sex",
+                                    "ERC_Yes" = "ERC",
+                                    "MatchOther_Yes" = "Other covariates",
+                                    "SES_Yes" = "SES"
                                     
 )
 
@@ -75,7 +75,7 @@ custom_palette <- mononokemedium_palette
 # Create the stacked bar chart with the custom color palette
 bar_chart <- ggplot(count_table_long, aes(x = Geographical_region, y = Count, fill = Category)) +
   geom_bar(stat = "identity") +
-  labs(x = "Geographical region", y = "#Operationalized confounders per region", fill = "Category") +
+  labs(x = "Geographical region", y = "No. of operationalized confounders per geographical region", fill = "Category adjusted for") +
   scale_fill_manual(values = custom_palette) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))

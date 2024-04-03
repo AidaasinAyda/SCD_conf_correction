@@ -1,4 +1,6 @@
-#Create tables for adjustment on age, sex/gender, ERC, SES and other covariates in SCD research
+library(MuMIn)
+library(dplyr)
+#Create tables for adjustment on age, sex/gender, ERC, SES and other covariates in SCD research. Only the frequencies of covariate adjustment are displayed.
 columns_to_analyze <- c("MatchAGE", "MatchGENDERSEX", "MATCHSES", "MatchERC", "MatchOther")
 
 tables_by_column <- lapply(columns_to_analyze, function(column) {

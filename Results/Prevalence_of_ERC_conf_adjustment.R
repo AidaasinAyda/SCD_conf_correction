@@ -21,9 +21,11 @@ print(correction_df)
 #Chi-square test ERC confounder adjustment per geographical region
 geograph_ERCmatch_tbl <- xtabs (~ Geographical_region + MatchERC,data=ERC_matching)
 print(geograph_ERCmatch_tbl)
-chisq.test(geograph_ERCmatch_tbl)
+Chisq_ERC_adjustment_per_geograph_region <- chisq.test(geograph_ERCmatch_tbl)
+Chisq_ERC_adjustment_per_geograph_region 
 
 #Odds ratio ERC adjustment Western vs. Non-Western regions
+Western_ERCmatch_tbl <- xtabs (~W_NW + MatchERC, data=ERC_matching)
 OR_Western_ERCmatch <- epi.2by2(Western_ERCmatch_tbl, method="case.control", conf.level=0.95)
 print(OR_Western_ERCmatch)
 
