@@ -14,7 +14,7 @@ tables_by_column <- lapply(columns_to_analyze, function(column) {
     mutate(
       yes_percentage = round(yes_count / total_count * 100),
       no_percentage = round(no_count / total_count * 100)
-    ) %>% 
+    ) %>%
     arrange(desc(yes_percentage)) %>%  # Arrange by descending yes_percentage
     as.data.frame()
    })
@@ -68,17 +68,21 @@ ERC_matching$Email <- as.factor(ERC_matching$Email)
 ## met corresponding author, nu met een andere package. Journal neem
 ## ik niet mee als random intercept. discipline wordt al meegenomen
 
-control <- glmerControl(optimizer ='optimx', optCtrl=list(method='nlminb'))
-fit <- glmer(ERCMatch2 ~ MATCHSES2 + MatchOther + Geographical_region + (1|Discipline1),
-                       data=ERC_matching, family=binomial, control=control)
-fit.null <- glmer(ERCMatch2 ~ 1 + (1|Discipline1),
-                       data=ERC_matching, family=binomial, control=control)
-summary(fit)  ## deze
+
+## We attempted to add Discipline as random effect, because it is
+## reasonable to assume there is correlation between manuscripts from
+## the same journal. But there is likely misclassification of
+## discipline, because the same authors may publish about multiple
+## disciplines.  We decided to use Journal instead as a proxy
+fit.null <- glmer(ERCMatch2 ~ 1 + (1|Journal),
+                       data=ERC_matching, family=binomial)
+fit <- glmer(ERCMatch2 ~ MATCHSES2 + MatchOther + Geographical_region + (1|Journal),
+             data=ERC_matching, family=binomial)
+
+summary(fit)
 exp(coeffs(fit))
 exp(confint.merMod(fit, method="Wald"))
 
 r.squaredGLMM(object=fit, null=fit.null)
 
 print(packageVersion('lme4'))
-
-
